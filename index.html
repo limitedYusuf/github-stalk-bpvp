@@ -47,6 +47,28 @@
                   </svg>
                   <p class="text-gray-400 mt-2">Tidak ada username ini di GitHub</p>
                </div>
+               <div v-if="followers && followers.length > 0" class="mt-8">
+                  <h2 class="text-2xl font-bold mb-4">Ini dia Fans mu</h2>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     <div v-for="follower in followers" :key="follower.id"
+                        class="bg-gray-800 p-4 rounded-md text-center">
+                        <img :src="follower.avatar_url" alt="Follower Avatar"
+                           class="rounded-full mb-2 w-20 h-20 mx-auto">
+                        <a :href="follower.html_url" class="text-blue-500 hover:underline"
+                           target="_blank">{{ follower.login }}</a>
+                     </div>
+                  </div>
+               </div>
+               <div v-else-if="followers && followers.length === 0"
+                  class="max-w-sm mx-auto flex items-center flex-col bg-gray-800 p-4 rounded-md mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80px" height="80px" fill="none"
+                     stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     <circle cx="12" cy="12" r="10" />
+                     <line x1="15" y1="9" x2="9" y2="15" />
+                     <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                  <p class="text-gray-400 mt-2">Waduh gak punya fans... cobalah bersosialisasi dengan orang :'(</p>
+               </div>
             </div>
          </div>
       </div>
@@ -57,6 +79,7 @@
             data: {
                username: 'limitedYusuf',
                userData: null,
+               followers: null,
                search: false,
                loading: false
             },
@@ -69,19 +92,37 @@
                         if (response.status === 200) {
                            this.userData = await response.json();
                            this.search = true;
+                           await this.getFollowers();
                         } else {
                            this.userData = null;
                            this.search = true;
+                           this.followers = null;
                         }
                      } catch (error) {
                         console.error('Kok gak ada => ', error);
                         this.userData = null;
                         this.search = true;
+                        this.followers = null;
                      } finally {
                         this.loading = false;
                      }
                   } else {
                      alert('Ente niat stalk gak sih?');
+                  }
+               },
+               async getFollowers() {
+                  try {
+                     const response = await fetch(this.userData.followers_url);
+                     if (response.status === 200) {
+                        this.followers = await response.json();
+                     } else {
+                        this.followers = null;
+                        this.userData = null;
+                     }
+                  } catch (error) {
+                     console.error('kasian nya gk ada follower :v => ', error);
+                     this.followers = null;
+                     this.userData = null;
                   }
                }
             }
