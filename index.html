@@ -47,8 +47,34 @@
                   </svg>
                   <p class="text-gray-400 mt-2">Tidak ada username ini di GitHub</p>
                </div>
+               <div v-if="repos && repos.length > 0" class="mt-8">
+                  <h2 class="text-2xl font-bold mb-4">List Project mu bro (boleh clone?)</h2>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     <div v-for="repo in repos" :key="repo.id" v-if="!repo.fork"
+                        class="bg-gray-800 p-4 rounded-md text-center">
+                        <h3 class="text-lg font-bold mb-2"><a :href="repo.html_url"
+                              class="text-blue-500 hover:underline" target="_blank">{{ repo.name }}</a></h3>
+                        <p class="text-gray-400">{{ repo.description }}</p>
+                        <div class="mt-2 flex justify-between">
+                           <span class="text-gray-500">Disukai: {{ repo.stargazers_count }}</span>
+                           <span class="text-gray-500">Stalker: {{ repo.watchers_count }}</span>
+                           <span class="text-gray-500">Bahasa: {{ repo.language }}</span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div v-else-if="repos && repos.length === 0"
+                  class="max-w-sm mx-auto flex items-center flex-col bg-gray-800 p-4 rounded-md mt-8">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="80px" height="80px" fill="none"
+                     stroke="red" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                     <circle cx="12" cy="12" r="10" />
+                     <line x1="15" y1="9" x2="9" y2="15" />
+                     <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                  <p class="text-gray-400 mt-2">Parah ente masa gak punya proyek</p>
+               </div>
                <div v-if="followers && followers.length > 0" class="mt-8">
-                  <h2 class="text-2xl font-bold mb-4">Ini dia Fans mu</h2>
+                  <h2 class="text-2xl font-bold mb-4">Berikut Fans setia mu :D</h2>
                   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                      <div v-for="follower in followers" :key="follower.id"
                         class="bg-gray-800 p-4 rounded-md text-center">
@@ -80,6 +106,7 @@
                username: 'limitedYusuf',
                userData: null,
                followers: null,
+               repos: null,
                search: false,
                loading: false
             },
@@ -93,16 +120,19 @@
                            this.userData = await response.json();
                            this.search = true;
                            await this.getFollowers();
+                           await this.getRepos();
                         } else {
                            this.userData = null;
                            this.search = true;
                            this.followers = null;
+                           this.repos = null;
                         }
                      } catch (error) {
                         console.error('Kok gak ada => ', error);
                         this.userData = null;
                         this.search = true;
                         this.followers = null;
+                        this.repos = null;
                      } finally {
                         this.loading = false;
                      }
@@ -122,6 +152,21 @@
                   } catch (error) {
                      console.error('kasian nya gk ada follower :v => ', error);
                      this.followers = null;
+                     this.userData = null;
+                  }
+               },
+               async getRepos() {
+                  try {
+                     const response = await fetch(this.userData.repos_url);
+                     if (response.status === 200) {
+                        this.repos = await response.json();
+                     } else {
+                        this.repos = null;
+                        this.userData = null;
+                     }
+                  } catch (error) {
+                     console.error('kasian nya gk ada repo :v => ', error);
+                     this.repos = null;
                      this.userData = null;
                   }
                }
