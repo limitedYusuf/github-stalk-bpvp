@@ -16,10 +16,10 @@
             <div class="mb-4 flex flex-col items-center">
                <input v-model="username"
                   class="bg-gray-800 border p-2 rounded-md text-white w-80 transition focus:outline-none focus:ring focus:border-blue-300 mb-3"
-                  placeholder="Enter GitHub Username">
+                  placeholder="(misal Yusuf tampan)" required>
                <button @click="getUserProfile"
-                  class="bg-gray-700 text-white p-2 rounded-md transition hover:bg-blue-700 focus:outline-none focus:ring focus:border-blue-300">View
-                  Profile</button>
+                  class="bg-gray-700 text-white p-2 rounded-md transition hover:bg-blue-700 focus:outline-none focus:ring focus:border-blue-300">Penasaran
+                  yaa...</button>
             </div>
             <div v-if="loading" class="max-w-sm mx-auto bg-gray-800 p-4 rounded-md animate-pulse">
                <div class="bg-gray-700 h-12 w-full rounded mb-2"></div>
@@ -32,9 +32,9 @@
                   <h2 class="text-xl font-bold">{{ userData.name }}</h2>
                   <p class="text-gray-400">{{ userData.bio }}</p>
                   <ul class="mt-4">
-                     <li><strong>Followers:</strong> {{ userData.followers }}</li>
-                     <li><strong>Following:</strong> {{ userData.following }}</li>
-                     <li><strong>Public Repos:</strong> {{ userData.public_repos }}</li>
+                     <li><strong>Jumlah Fans:</strong> {{ userData.followers }} Orang</li>
+                     <li><strong>Terpaksa Follow:</strong> {{ userData.following }} Orang</li>
+                     <li><strong>Total Repo Pemula:</strong> {{ userData.public_repos }} Biji</li>
                   </ul>
                </div>
             </div>
@@ -57,13 +57,13 @@
                         const response = await fetch(`https://api.github.com/users/${this.username}`);
                         this.userData = await response.json();
                      } catch (error) {
-                        console.error('Error fetching user profile:', error);
+                        console.error('Kok gak ada => ', error);
                         this.userData = null;
                      } finally {
                         this.loading = false;
                      }
                   } else {
-                     alert('Please enter a GitHub username.');
+                     alert('Ente niat stalk gak sih?');
                   }
                }
             }
